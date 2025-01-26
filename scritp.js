@@ -70,15 +70,15 @@ for(let i = 0; i<buttons.length; i++){
                 display.textContent = var1.toFixed(5);
             }
 
-            var1 = 0;
+            //var1 = 0;
             operator = '+';
-            var2 = null;
+            var2 = 0;
         }
         else if(value == "ac"){
             var1 = 0;
             var2 = null;
             operator = '+';
-            display.textContent = "";
+            display.textContent = "UJJWALCAL";
         }
         else if(value == "."){
             
