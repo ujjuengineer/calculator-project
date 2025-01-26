@@ -1,123 +1,201 @@
 let display = document.getElementById("display");
 let buttons = document.getElementsByClassName("button");
 
-function checkOperator(value){
-    let operators = document.getElementsByClassName("operator");
-    for(let i = 0; i<operators.length; i++){
-        if(value == operators[i].getAttribute("data-value")) return true;
+let val1 = "";
+let val2 = "";
+let operator = "+";
+
+//let firstRound = true;
+
+function containPoint(val){
+    val = toString(val);
+    for(let i = 0; i<val.length; i++){
+        if(val[i] == '.') return true;
     }
     return false;
 }
 
-function checkNum(value){
+function isNum(value){
     let nums = document.getElementsByClassName("nums");
     for(let i = 0; i<nums.length; i++){
-        if(value == nums[i].getAttribute("data-value")) return true;
+        if(nums[i].getAttribute("data-value")==value) return true;
+    }
+    return false;
+}
+function isOperator(value){
+    let operators = document.getElementsByClassName("operator");
+    for(let i = 0; i<operators.length; i++){
+        if(operators[i].getAttribute("data-value")==value) return true;
     }
     return false;
 }
 
-
-let var1 = 0;
-let operator= '+';
-let var2 = null;
-
 for(let i = 0; i<buttons.length; i++){
+
     buttons[i].addEventListener('click', function(){
-        let value = this.getAttribute("data-value"); // this will give the value stored in the data-value attribute
-        let text = display.textContent.trim(); // this will contain the text present inside the display
+        let value = this.getAttribute("data-value");
 
-        if(checkOperator(value)){
-            //let ans = eval(var1+' '+operator+' '+var2);
-            if(var2 == null) display.textContent = var1 + value;
+        if(isNum(value)){
+            val2 += value;
+            if(val1 == "")display.textContent = val2;
+            else if(val1[val1.length-1] == '.') display.textContent = val1 + 0 + operator + val2;
             else {
-                var1 = eval(var1 +' '+ operator+' ' + var2);
-                var2 = 0;
-                display.textContent = var1.toFixed(5) + value;
-            }
-
-            operator = value;   
-        }
-        else if(checkNum(value)){
-
-            if(var2 == null) {
-                var2 = value;
-                display.textContent = var2;
-            }
-            else {
-
-                var2 = var2 + value;
-
-                if(var1 != 0) {
-                    display.textContent = var1 + operator + var2;
+                if(operator != "") display.textContent = val1 + operator + val2;
+                else{
+                    val1 = "";
+                    display.textContent = val1 + operator + val2;
                 }
-                else display.textContent = var2;
             }
         }
-        else if(value == "sign"){
 
-            if(var2 != null){
-                var2 *= -1;
-                display.textContent = var1 + operator + '(' + var2 + ')';
-            } 
+        else if(isOperator(value)){
+            // if(operator == "") operator = value;
+            if(val1 == "" && val2 == ""){
+                return;
+            }
+            else if(val1=="" && val2 !=""){
+                val1 = val2;
+                val2 = "";
+                operator = value;
+            }
+            else if(val1 != "" && val2==""){
+                operator = value;
+            }
+            else if(val1 !="" && val2 != ""){
+                val1 = eval(val1 + ' ' + operator + ' ' + val2);
+                val1 = parseFloat(val1).toFixed(5);
+                operator = value;
+                val2 = "";
+            }
+            if(val1[val1.length-1] == '.') display.textContent = val1 + 0 + operator;
+            else display.textContent = val1 + operator;
+        }
+
+        else if(value == "."){
+            if(val1 == "" && val2 == ""){
+                val2 += "0.";
+                display.textContent = val2 + 0;
+            }
+            else if(val1 == "" && val2 != ""){
+                // check if . already exist or not
+                let flag = false;
+                for(let i = 0; i<val2.length; i++){
+                    if(val2[i] == ".") flag = true;
+                }
+
+                // if . don't exist then add it
+                if(flag == false){
+                    val2 += '.';
+                    display.textContent = val2 + 0;
+                }
+
+            }
+            else if(val1 != "" && val2 == ""){
+
+                if(operator == "") return;
+
+                val2 += "0.";
+                if(val1[val1.length-1] == '.') {
+                    display.textContent = val1 + 0 + operator + val2 + 0;
+                }
+                else display.textContent = val1 + operator + val2 + 0;
+
+            }
+            else if(val1 != "" && val2 != ""){
+
+                if(operator == "") return;
+
+                // check if val2 have . or not
+                let flag = false;
+                for(let i = 0; i<val2.length; i++){
+                    if(val2[i] == ".") flag = true;
+                }
+
+                // if . don't exist then add it
+                if(flag == false){
+                    val2 += '.';
+                    if(val1[val1.length-1] == '.') {
+                        display.textContent = val1 + 0 + operator + val2 + 0;
+                    }
+                    else display.textContent = val1 + operator + val2 + 0;
+                }
+
+            }
         }
         else if(value == "="){
-
-            if(var2 == null) display.textContent = var1;
-            else {
-                var1 = eval(var1 +' '+ operator+' ' + var2);
-                var2 = 0;
-                display.textContent = var1.toFixed(5);
+            if(val1 == "" && val2 == "") {
+                display.textContent = 0;
+                return;
             }
-
-            //var1 = 0;
-            operator = '+';
-            var2 = 0;
-        }
-        else if(value == "ac"){
-            var1 = 0;
-            var2 = null;
-            operator = '+';
-            display.textContent = "UJJWALCAL";
-        }
-        else if(value == "."){
-            
-            if(var2 == null) {
-                var2 = "0.";
-                display.textContent = var2;
+            else if(val1 == "" && val2 != ""){
+                if(val2[val2.length - 1] == '.') display.textContent = val2 + 0;
+                else display.textContent = val2;
             }
-            else {
-                if(var2[var2.length - 1] != '.'){
-                    var2 += ".";
-                    display.textContent += '.';
+            else if (val1 != "" && val2 == "") {
+                if (val1[val1.length-1] == '.') display.textContent = val1 + 0;
+                else display.textContent = val1;
+                operator = "";
+            }
+            else if (val1 != "" && val2 != "") {
+                val1 = eval(val1 + ' ' + operator + ' ' + val2);
+                val2 = "";
+                operator = "";
+                val1 = parseFloat(val1).toFixed(5);
+                display.textContent = val1;
+                
+            }
+        }
+
+        else if(value == "sign") {
+            if(val1 == "" && val2 == "") return;
+            else if(val1 == "" && val2 != ""){
+                val2 *= -1;
+                if(containPoint(val2)){
+                    display.textContent = val2 + 0;
+                }
+                else display.textContent = val2;
+            }
+            else if(val1 != "" && val2 == ""){
+                if(operator == ""){
+                    val1 *= -1;
+                    if(containPoint(val1)){
+                        display.textContent = val1 + 0;
+                    }
+                    else display.textContent = val1;
+                }
+                else {
+                    val2 = "0";
+                    val2 *= -1;
+                    if(containPoint(val1)){
+                        display.textContent = val1 + 0 + operator + val2;
+                    }
+                    else display.textContent = val1 + operator + val2;
+                    //display.textContent = val2;
                 }
             }
+            else if(val1 != "" && val2 != ""){
+                val2 *= -1;
+                if(val1[val1.length-1] == '.'){
+                    if(val2[val2.length - 1] == '.'){
+                        display.textContent = val1 + 0 + operator + '(' + val2 + 0+')';
+                    }
+                    else display.textContent = val1+0+operator+'('+val2+')';
+                }
+                else {
+                    if(val2[val2.length - 1] == '.'){
+                        display.textContent = val1 + operator + '(' + val2 + 0+')';
+                    }
+                    else display.textContent = val1 + operator + '('+val2+')';
+                }
+            }
+            
+        }
+
+        else if(value == "ac"){
+            val1 = "";
+            val2 = "";
+            operator = "+";
+            display.textContent = "UJJWALCAL";
         }
     })
 }
-
-
-
-/*
-Notes : 
-    use of "data-value" : use to store any value of any tag, we can extract this value using js
-    use of "getAttribute" : use to get the value of the attribute "data-value", syntax : elementName.getAttribute("data-value")
-    use of length method : use to find the length of any string or array, e.g., arr.length, str.length;
-
-    use of "textContent" : use to get the text content of any element 
-        e.g., let container = document.getElementById("text");
-                container.textContent; // this will give the content of the container
-    
-    use of "trim()" : use to remove the extra space from begining and end of the string, 
-        e.g., let str = "    ujjwal    ";
-              let newStr = str.trim(); => this will return "ujjwal" 
-
-    use of "eval" : eval(val1 + operator + val2);, better you add space after every input, eval(val1 + " " + operator + " " + val2);
-
-    use of toFixex(dig) : use to fix the number of dicimal places in digit
-        e.g., let num = 5.3464624652;
-                num = num.toFixed(3); => this will make the num to terminate after 3 dicimal places
-
-    
-
-*/
