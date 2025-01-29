@@ -72,15 +72,26 @@ for(let i = 0; i<buttons.length; i++){
         }
 
         else if(value == "."){
+            
             if(val1 == "" && val2 == ""){
                 val2 += "0.";
                 display.textContent = val2 + 0;
             }
             else if(val1 == "" && val2 != ""){
                 // check if . already exist or not
+                //console.log(typeof(val2));
                 let flag = false;
-                for(let i = 0; i<val2.length; i++){
-                    if(val2[i] == ".") flag = true;
+                // agar val2 string hai then check directly if . exist or not, else pehle string me convert kro and then check kro !!
+                if(typeof(val2) == String){
+                    for(let i = 0; i<val2.length; i++){
+                        if(val2[i] == ".") flag = true;
+                    }
+                }
+                else{
+                    val2 = val2.toString();
+                    for(let i = 0; i<val2.length; i++){
+                        if(val2[i] == ".") flag = true;
+                    }
                 }
 
                 // if . don't exist then add it
